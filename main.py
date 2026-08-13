@@ -7,6 +7,8 @@ import numpy as np
 import string
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
+
+
 # ============================
 # FastAPI App
 # ============================
@@ -23,6 +25,14 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+
+@app.get("/app")
+def frontend():
+    return FileResponse("frontend/index.html")
 # ============================
 # Load Model & Files
 # ============================
