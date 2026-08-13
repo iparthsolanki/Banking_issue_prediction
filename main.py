@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import tensorflow as tf
 import pickle
@@ -15,12 +16,17 @@ app = FastAPI(
     version="1.0"
 )
 
-# ============================
-# Load Model & Supporting Files
-# ============================
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
-# Make sure these files exist inside the 'static' folder
-model = tf.keras.models.load_model("static/BiGRU_model (1).keras")
+# ============================
+# Load Model & Files
+# ============================
+model = tf.keras.models.load_model("static/BiGRU_model.keras")
 
 with open("static/tokenizer.pkl", "rb") as f:
     tokenizer = pickle.load(f)
@@ -28,17 +34,16 @@ with open("static/tokenizer.pkl", "rb") as f:
 with open("static/label_names.pkl", "rb") as f:
     label_names = pickle.load(f)
 
-# Same max_len used during training
 MAX_LEN = 30
 
 # ============================
-# Pydantic Request Schema
+# Pydantic Schema
 # ============================
 class UserQuery(BaseModel):
     text: str
 
 # ============================
-# Text Preprocessing
+# Preprocessing
 # ============================
 def preprocess_text(text: str) -> str:
     text = text.lower()
@@ -46,25 +51,17 @@ def preprocess_text(text: str) -> str:
     return text
 
 # ============================
-# Home Route
+# Routes
 # ============================
 @app.get("/")
 def home():
-    return {
-        "message": "Banking77 Intent Prediction API is running successfully!"
-    }
+    return {"message": "Banking77 Intent Prediction API is running successfully!"}
 
-# ============================
-# Prediction Route
-# ============================
 @app.post("/predict")
 def predict(query: UserQuery):
-    cleaned_text = preprocess_text(query.text)
+    cleaned = preprocess_text(query.text)
 
-    # Convert text to sequence
-    sequence = tokenizer.texts_to_sequences([cleaned_text])
-
-    # Pad sequence
+    sequence = tokenizer.texts_to_sequences([cleaned])
     padded = pad_sequences(
         sequence,
         maxlen=MAX_LEN,
@@ -72,14 +69,12 @@ def predict(query: UserQuery):
         truncating="post"
     )
 
-    # Model prediction
     prediction = model.predict(padded, verbose=0)
-
-    predicted_index = int(np.argmax(prediction))
+    idx = int(np.argmax(prediction))
     confidence = float(np.max(prediction))
 
     return {
         "input_text": query.text,
-        "predicted_intent": label_names[predicted_index],
+        "predicted_intent": label_names[idx],
         "confidence": round(confidence, 4)
     }
