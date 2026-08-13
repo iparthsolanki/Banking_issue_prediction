@@ -1,5 +1,5 @@
 // Point this at your FastAPI server. Same-origin by default.
-const API_URL = "/predict";
+const API_URL = "https://banking-issue-prediction.onrender.com/predict";
 
 const input = document.getElementById("queryInput");
 const askBtn = document.getElementById("askBtn");
@@ -10,24 +10,24 @@ const confFill = document.getElementById("confFill");
 const confValue = document.getElementById("confValue");
 const echoBox = document.getElementById("echoBox");
 
-function humanizeIntent(label){
+function humanizeIntent(label) {
   return label.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 }
 
-function showError(msg){
+function showError(msg) {
   resultBox.classList.remove("show");
   errorBox.textContent = msg;
   errorBox.classList.add("show");
 }
 
-function clearError(){
+function clearError() {
   errorBox.classList.remove("show");
   errorBox.textContent = "";
 }
 
-async function classify(){
+async function classify() {
   const text = input.value.trim();
-  if(!text){
+  if (!text) {
     showError("Type something first — the model needs a query to classify.");
     return;
   }
@@ -35,14 +35,14 @@ async function classify(){
   askBtn.disabled = true;
   askBtn.textContent = "Thinking…";
 
-  try{
+  try {
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text })
     });
 
-    if(!res.ok){
+    if (!res.ok) {
       throw new Error(`Server responded with ${res.status}`);
     }
 
@@ -60,10 +60,10 @@ async function classify(){
       confFill.style.width = pct + "%";
     });
 
-  }catch(err){
+  } catch (err) {
     showError("Couldn't reach the model — check that the FastAPI server is running and API_URL is correct.");
     console.error(err);
-  }finally{
+  } finally {
     askBtn.disabled = false;
     askBtn.textContent = "Classify";
   }
@@ -71,7 +71,7 @@ async function classify(){
 
 askBtn.addEventListener("click", classify);
 input.addEventListener("keydown", (e) => {
-  if(e.key === "Enter") classify();
+  if (e.key === "Enter") classify();
 });
 document.querySelectorAll(".chip").forEach(chip => {
   chip.addEventListener("click", () => {
