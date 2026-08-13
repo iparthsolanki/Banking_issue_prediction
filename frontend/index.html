@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banking77 · Intent Classifier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="eyebrow"><span class="dot"></span> BiGRU · 77 banking intents</div>
+  <h1>What's your <span>banking</span> question?</h1>
+  <p class="sub">Type a query the way a customer would say it. The model reads it and tells you the intent it's most confident about.</p>
+
+  <div class="console">
+    <div class="input-row">
+      <input id="queryInput" type="text" placeholder="e.g. my card payment got declined twice" autocomplete="off" />
+      <button id="askBtn">Classify</button>
+    </div>
+
+    <div class="chips">
+      <span class="chip" data-q="how do i activate my new card">activate my new card</span>
+      <span class="chip" data-q="why was my transfer declined">why transfer declined</span>
+      <span class="chip" data-q="what is the exchange rate today">exchange rate today</span>
+      <span class="chip" data-q="i lost my card can you block it">lost my card</span>
+    </div>
+
+    <div class="error" id="errorBox"></div>
+
+    <div class="result" id="resultBox">
+      <div class="result-label">Predicted intent</div>
+      <div class="intent-name" id="intentName">—</div>
+      <div class="conf-row">
+        <div class="conf-track"><div class="conf-fill" id="confFill"></div></div>
+        <div class="conf-value" id="confValue">0%</div>
+      </div>
+      <div class="echo" id="echoBox"></div>
+    </div>
+  </div>
+
+  <footer>POST <code>/predict</code> · edit <code>API_URL</code> in script.js if hosted elsewhere</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
